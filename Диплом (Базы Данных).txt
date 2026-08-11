@@ -1,0 +1,52 @@
+$ ssh 038ae669-89c9-43a4-91f9-253f30aa775b@serverhub.praktikum-services.ru -p 4554
+morty@server-038ae669-89c9-43a4-91f9-253f30aa775b:~$ psql -U morty -d scooter_rent
+Password for user morty:
+psql (11.18 (Debian 11.18-0+deb10u1))
+Type "help" for help.
+
+scooter_rent=# SELECT "courierId", COUNT(*)
+scooter_rent-# FROM "Orders"
+scooter_rent-# GROUP BY "courierId";
+ courierId | count
+-----------+-------
+(0 rows)
+
+scooter_rent=# SELECT "courierId", COUNT(*)
+scooter_rent-# FROM "Orders"
+scooter_rent-# GROUP BY "courierId";
+ courierId | count
+-----------+-------
+         1 |     2
+(1 row)
+
+scooter_rent=# SELECT
+scooter_rent-#     "Couriers".login,
+scooter_rent-#     COUNT("Orders".id) AS orders_in_delivery
+scooter_rent-# FROM
+scooter_rent-#     "Couriers"
+scooter_rent-#     INNER JOIN "Orders" ON "Couriers".id = "Orders"."courierId"
+scooter_rent-# WHERE
+scooter_rent-#     "Orders"."inDelivery" = true
+scooter_rent-# GROUP BY
+scooter_rent-#     "Couriers".login
+scooter_rent-# ORDER BY
+scooter_rent-#     orders_in_delivery DESC;
+ login | orders_in_delivery
+-------+--------------------
+ poly  |                  2
+(1 row)
+
+scooter_rent=# SELECT
+scooter_rent-#     track,
+scooter_rent-#     CASE
+scooter_rent-#         WHEN "finished" = true THEN 2
+scooter_rent-#         WHEN "cancelled" = true THEN -1
+scooter_rent-#         WHEN "inDelivery" = true THEN 1
+scooter_rent-#         ELSE 0
+scooter_rent-#     END AS status
+scooter_rent-# FROM "Orders";
+ track  | status
+--------+--------
+ 568482 |      1
+ 568482 |      1
+(2 rows)
